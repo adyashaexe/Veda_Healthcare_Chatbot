@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Veda - Healthcare Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" />
+  <style>
+    /* Common Styles */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('Nurse background Vectors - Download Free High-Quality Vectors from Freepik _ Freepik.jpg') no-repeat center center / cover;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Container for pages 1 and 2 */
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      width: 350px;
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .container img {
+      width: 250px;
+      margin-bottom: 20px;
+    }
+    .bot-pointer {
+      animation: bounce 1.5s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    h2, h3 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #personalInfo {
+      display: none;
+      margin-top: 20px;
+    }
+
+    /* Fullscreen trusted chat styles for page3 */
+    .fullscreen-chat {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Nunito', Arial, sans-serif;
+      background: #f0faf9;
+      position: relative;
+    }
+    .fullscreen-chat.active {
+      display: flex;
+    }
+    .main-layout {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      background: none;
+      font-size: 16px;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 400px;
+      min-width: 350px;
+      background: #007a71;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 100px 0 40px 0;
+      color: #fff;
+      height: 100vh;
+      box-shadow: 4px 0 44px #004d4c44;
+      z-index: 2;
+      position: relative;
+      font-size: 18px;
+    }
+    .floating-header {
+      position: absolute;
+      top: 30px;
+      left: 38px;
+      z-index: 10;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: white;
+      text-shadow: 0 3px 9px #00695cbb;
+    }
+    .floating-header img {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      box-shadow: 0 5px 24px #009688a0;
+      background: #fcffd9;
+      object-fit: cover;
+      border: 3px solid #00b59e;
+    }
+    .menu-items {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      margin-top: 50px;
+      width: 100%;
+      padding-left: 70px;
+    }
+    .menu-btn {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 21px 25px;
+      border-radius: 18px;
+      color: #fff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 2px;
+      position: relative;
+      transition: transform 0.18s, background 0.18s, color 0.16s, box-shadow 0.16s;
+      font-size: 22px;
+    }
+    .menu-btn i {
+      font-size: 1.9em;
+      color: #00b59e;
+      filter: drop-shadow(0px 2px 8px #007a70a2);
+    }
+    .menu-btn.active, .menu-btn:hover {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      box-shadow: 0 4px 21px #00b59e99;
+      transform: scale(1.06);
+      border-left: 10px solid #f7ca5bcc;
+    }
+    .menu-btn .badge {
+      background: #e63c59;
+      color: #fff;
+      font-size: 1em;
+      border-radius: 10px;
+      padding: 3px 10px;
+      position: absolute;
+      right: 21px;
+      top: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      box-shadow: 0 1px 6px #e63c5933;
+    }
+    .sidebar .footer {
+      position: absolute;
+      bottom: 32px;
+      left: 0;
+      width: 100%;
+      padding-left: 56px;
+      font-size: 1.12em;
+      color: #b3ded9;
+      opacity: 0.95;
+      letter-spacing: 1.6px;
+    }
+    /* Chat panel */
+    .chat-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: none;
+      padding: 0;
+      position: relative;
+      min-width: 0;
+      height: 100vh;
+      z-index: 1;
+      font-size: 21px;
+    }
+    .chat-card {
+      margin: 0 auto;
+      width: 99%;
+      height: 100%;
+      background: #ffffffcc;
+      border-radius: 36px;
+      box-shadow: 0 16px 48px #00b59e80, 0 2px 18px #00b59e60;
+      border: 2px solid #eafefc;
+      display: flex;
+      flex-direction: column;
+      max-height: 97vh;
+      overflow: hidden;
+    }
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 19px;
+      padding: 34px 54px 20px 54px;
+      background: #f7e4a7;
+      border-radius: 36px 36px 0 0;
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-size: 1.57rem;
+      color: #003366;
+      font-weight: 700;
+      letter-spacing: 2.4px;
+      box-shadow: 0 8px 22px #cbe4891a;
+    }
+    .chat-header img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #fff9cc;
+      margin-right: 10px;
+      background: #fff;
+      box-shadow: 0 2px 12px #cea62a36;
+    }
+    .chat-main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 52px 72px 44px 70px;
+      background: #f2f8f7;
+      display: flex;
+      flex-direction: column;
+      gap: 44px;
+      font-size: 21px;
+    }
+    .chat-bubble.bot {
+      align-self: flex-start;
+      background: #fefbd2;
+      color: #003366;
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-weight: 900;
+      padding: 30px 38px;
+      border-radius: 29px 29px 29px 15px;
+      max-width: 77%;
+      box-shadow: 0 8px 30px #b5efff21;
+      margin-bottom: 7px;
+      border: 2px solid #e9f3f6;
+      letter-spacing: 0.09em;
+      line-height: 1.8em;
+    }
+    .chat-bubble.user {
+      align-self: flex-end;
+      background: #e9f6f2;
+      color: #003366;
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-weight: 900;
+      padding: 30px 38px;
+      border-radius: 29px 29px 15px 29px;
+      max-width: 77%;
+      box-shadow: 0 8px 28px #b6efff18;
+      margin-bottom: 7px;
+      border: 2px solid #b5efffaa;
+      letter-spacing: 0.09em;
+      line-height: 1.8em;
+    }
+    .chat-footer {
+      background: none;
+      padding: 30px 70px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      justify-content: center;
+      position: relative;
+      min-height: 82px;
+      font-size: 20px;
+      flex-wrap: wrap;
+    }
+    .chat-footer select,
+    .chat-footer input {
+      border-radius: 16px;
+      border: 3.6px solid #007a71;
+      font-weight: 700;
+      background: #f7fff9;
+      color: #003366;
+      font-family: inherit;
+      transition: border 0.22s;
+      letter-spacing: 0.09em;
+      font-size: 1.16em;
+      padding: 15px 20px;
+    }
+    .chat-footer input:focus,
+    .chat-footer select:focus {
+      border: 4.5px solid #003366;
+      background: #fff;
+      outline: none;
+    }
+    .chat-footer select {
+      width: 120px;
+      height: 54px;
+    }
+    .chat-footer input[type="text"],
+    .chat-footer input[type="number"],
+    .chat-footer input[type="date"] {
+      flex: 1;
+      min-width: 180px;
+      margin-left: 10px;
+    }
+    .chat-footer button {
+      padding: 26px 55px 26px 38px;
+      border-radius: 14px;
+      border: none;
+      font-weight: 900;
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-size: 1.5em;
+      background: #007a71;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+      box-shadow: 0 4px 24px #00b59eaa;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 2px;
+    }
+    .chat-footer button:active, .chat-footer button:focus {
+      background: #006752;
+      box-shadow: 0 8px 26px #00977570;
+      transform: scale(0.97);
+    }
+    .chat-footer button .bi-send-fill {
+      font-size: 1em;
+      margin-right: -6px;
+      animation: sendAnim 2.1s linear infinite;
+      color: #00b59e;
+    }
+    @keyframes sendAnim {
+      0% { transform: translateY(0);}
+      4% { transform: translateY(-6px);}
+      8% { transform: translateY(0);}
+      100% {transform: translateY(0);}
+    }
+    /* Page 1 & 2 specific styles */
+    #page1, #page2 {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 50;
+    }
+    @media (max-width: 850px) {
+      body {
+        align-items: flex-start;
+        padding-top: 20px;
+      }
+      #page1, #page2 {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        width: 90vw;
+        max-width: 400px;
+        margin: auto;
+      }
+      .fullscreen-chat {
+        display: block !important;
+        width: 100vw;
+        height: 90vh;
+      }
+      .main-layout {
+        height: 90vh;
+      }
+      .sidebar {
+        width: 100vw;
+        height: auto;
+        padding: 20px;
+        box-shadow: none;
+        flex-direction: row;
+        justify-content: center;
+      }
+      .menu-items {
+        flex-direction: row;
+        gap: 15px;
+        padding-left: 0;
+      }
+      .menu-btn {
+        font-size: 14px;
+        padding: 12px 20px;
+        border-radius: 6px;
+      }
+      .floating-header {
+        position: relative;
+        left: auto;
+        top: auto;
+        flex-direction: row;
+        justify-content: center;
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+      .chat-header {
+        padding: 20px;
+        font-size: 1.1rem;
+      }
+      .chat-main {
+        padding: 20px;
+        gap: 22px;
+      }
+      .chat-footer {
+        padding: 15px 20px;
+        font-size: 14px;
+        min-height: auto;
+      }
+      .chat-footer input[type="text"] {
+        font-size: 1em;
+        padding: 16px;
+      }
+      .chat-footer button {
+        font-size: 1em;
+        padding: 16px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Page 1 -->
+  <div class="container active" id="page1">
+    <img src="WhatsApp_Image_2025-09-19_at_21.28.48_dae72bf3-removebg-preview.png" alt="Bot" class="bot-pointer" />
+    <h2>Welcome to Veda</h2>
+    <button onclick="showPage('page2')">Enter</button>
+  </div>
+  <!-- Page 2 -->
+  <div class="container" id="page2">
+    <h3>Select Language</h3>
+    <select>
+      <option>English</option>
+      <option>हिंदी</option>
+      <option>Odia</option>
+    </select>
+    <hr />
+    <!-- Credentials Section (hidden after continue) -->
+    <div id="credentials">
+      <h3>User Credentials</h3>
+      <input type="text" id="phone" placeholder="Phone Number" maxlength="10" minlength="10" pattern="\d{10}" required />
+      <input type="password" id="password" placeholder="Password" maxlength="8" required />
+      <button onclick="validateCredentials()">Continue</button>
+    </div>
+    <!-- Personal Info Section -->
+    <div id="personalInfo">
+      <h3>Personal Info</h3>
+      <input type="text" id="name" placeholder="Name" required oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')" />
+      <input type="number" id="age" placeholder="Age" min="1" max="110" required />
+      <input type="text" id="address" placeholder="Address" />
+      <input type="number" id="pincode" placeholder="Pincode" required />
+      <button onclick="submitForm()">Submit</button>
+    </div>
+  </div>
+  <!-- Page 3 - Fullscreen Chat -->
+  <div class="fullscreen-chat" id="page3">
+    <div class="main-layout">
+      <div class="floating-header">
+        <img src="image.jpg" alt="Bot Avatar" />
+        <span class="app-title">VEDA</span>
+      </div>
+      <div class="sidebar">
+        <div class="menu-items">
+          <button class="menu-btn active" onclick="alert('New Chat clicked')"><i class="bi bi-chat-dots"></i> New Chat</button>
+          <button class="menu-btn" onclick="alert('Consultancy clicked')"><i class="bi bi-person-vcard"></i> Consultancy</button>
+          <button class="menu-btn" onclick="alert('Nearest Hospital clicked')"><i class="bi bi-hospital"></i> Nearest Hospital</button>
+          <button class="menu-btn" onclick="alert('Prescription clicked')"><i class="bi bi-file-earmark-medical"></i> Prescription <span class="badge">2</span></button>
+          <button class="menu-btn" onclick="alert('History clicked')"><i class="bi bi-clock-history"></i> History</button>
+          <button class="menu-btn" onclick="alert('Emergency clicked')"><i class="bi bi-exclamation-triangle"></i> Emergency</button>
+        </div>
+        <div class="footer">Veda Healthcare © 2025</div>
+      </div>
+      <div class="chat-section">
+        <div class="chat-card">
+          <div class="chat-header">
+            <img src="image.jpg" alt="Avatar" />
+            <span>VEDA, Your Trusted Healthcare Assistant</span>
+          </div>
+          <div class="chat-main" id="chat-messages">
+            <div class="chat-bubble bot">
+              Hello! I’m <b>VEDA</b>, your trusted healthcare assistant.<br />
+              How can I help you today?
+            </div>
+          </div>
+          <form class="chat-footer" id="data-input-form" onsubmit="event.preventDefault(); handleDataInput();">
+            <select id="input-type-selector" title="Select input type">
+              <option value="text">Text</option>
+              <option value="number">Number</option>
+              <option value="date">Date</option>
+            </select>
+            <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off" />
+            <input type="number" id="number-input" placeholder="Type a number..." style="display:none;" />
+            <input type="date" id="date-input" style="display:none;" />
+            <button type="submit"><i class="bi bi-send-fill"></i> Send</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // DOM ready wrapper
+    document.addEventListener("DOMContentLoaded", function() {
+
+      // Page navigation
+      window.showPage = function(pageId) {
+        ['page1', 'page2', 'page3'].forEach(id => {
+          document.getElementById(id).classList.remove('active');
+        });
+        if(pageId === 'page3'){
+          document.getElementById('page1').style.display = 'none';
+          document.getElementById('page2').style.display = 'none';
+          document.getElementById('page3').classList.add('active');
+        } else {
+          document.getElementById('page1').style.display = 'none';
+          document.getElementById('page2').style.display = 'none';
+          document.getElementById('page3').classList.remove('active');
+          document.getElementById(pageId).style.display = 'block';
+        }
+      };
+
+      // Validate credentials before showing personal info
+      window.validateCredentials = function() {
+        const phone = document.getElementById("phone").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(phone)) {
+          alert("Please enter a valid 10-digit phone number.");
+          return;
+        }
+        if (password.length === 0 || password.length > 8) {
+          alert("Password must be between 1 and 8 characters.");
+          return;
+        }
+        document.getElementById("credentials").style.display = "none";
+        document.getElementById("personalInfo").style.display = "block";
+      };
+
+      // Validate name & submit
+      window.submitForm = function() {
+        const name = document.getElementById("name").value.trim();
+        const age = parseInt(document.getElementById("age").value, 10);
+        const pincode = document.getElementById("pincode").value.trim();
+        const nameRegex = /^[A-Za-z ]+$/;
+        if (!nameRegex.test(name)) {
+          alert("Name should only contain alphabets and spaces.");
+          return;
+        }
+        if (isNaN(age) || age < 1 || age > 110) {
+          alert("Age must be between 1 and 110.");
+          return;
+        }
+        if (!/^[0-9]+$/.test(pincode)) {
+          alert("Pincode should contain only numbers.");
+          return;
+        }
+        alert("Form submitted successfully!");
+        showPage('page3');
+      };
+
+      // Input selector toggling input fields visibility
+      const inputTypeSelector = document.getElementById('input-type-selector');
+      inputTypeSelector.addEventListener('change', function() {
+        document.getElementById('chat-input').style.display = 'none';
+        document.getElementById('number-input').style.display = 'none';
+        document.getElementById('date-input').style.display = 'none';
+        if(this.value === 'text') {
+          document.getElementById('chat-input').style.display = '';
+        } else if(this.value === 'number') {
+          document.getElementById('number-input').style.display = '';
+        } else if(this.value === 'date') {
+          document.getElementById('date-input').style.display = '';
+        }
+      });
+
+      // Handle sending data and respond
+     window.handleDataInput = function() {
+  let type = document.getElementById('input-type-selector').value;
+  let value;
+  if (type === 'text') {
+    value = document.getElementById('chat-input').value.trim();
+  } else if (type === 'number') {
+    value = document.getElementById('number-input').value;
+  } else if (type === 'date') {
+    value = document.getElementById('date-input').value;
+  }
+  if (!value) return;
+
+  const chat = document.getElementById('chat-messages');
+
+  // User bubble
+  const userBubble = document.createElement('div');
+  userBubble.className = 'chat-bubble user';
+  userBubble.innerText = value;
+  chat.appendChild(userBubble);
+  chat.scrollTop = chat.scrollHeight;
+
+  // Clear input
+  if(type === 'text') document.getElementById('chat-input').value = '';
+  if(type === 'number') document.getElementById('number-input').value = '';
+  if(type === 'date') document.getElementById('date-input').value = '';
+
+  // Send to backend
+  fetch("http://localhost:5000/api/message", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: value })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const botBubble = document.createElement('div');
+    botBubble.className = 'chat-bubble bot';
+    botBubble.innerText = data.reply;
+    chat.appendChild(botBubble);
+    chat.scrollTop = chat.scrollHeight;
+  })
+  .catch(err => {
+    const botBubble = document.createElement('div');
+    botBubble.className = 'chat-bubble bot';
+    botBubble.innerText = "⚠️ Error connecting to server.";
+    chat.appendChild(botBubble);
+    console.error(err);
+  });
+  }
+
+    }); 
+  </script>
+</body>
+</html>
